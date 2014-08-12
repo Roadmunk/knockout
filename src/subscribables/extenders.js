@@ -39,7 +39,7 @@ ko.extenders = {
     'notify': function(target, notifyWhen) {
         target["equalityComparer"] = notifyWhen == "always" ?
             null :  // null equalityComparer means to always notify
-            valuesArePrimitiveAndEqual;
+            valuesAreExactlyEqual;
     }
 };
 
@@ -47,6 +47,10 @@ var primitiveTypes = { 'undefined':1, 'boolean':1, 'number':1, 'string':1 };
 function valuesArePrimitiveAndEqual(a, b) {
     var oldValueIsPrimitive = (a === null) || (typeof(a) in primitiveTypes);
     return oldValueIsPrimitive ? (a === b) : false;
+}
+
+function valuesAreExactlyEqual(a, b) {
+    return a === b;
 }
 
 function throttle(callback, timeout) {

@@ -34,6 +34,8 @@ ko.computed = ko.dependentObservable = function (evaluatorFunctionOrOptions, eva
         _subscriptionsToDependencies = {};
         _dependenciesCount = 0;
         _needsEvaluation = false;
+        readFunction = null;
+        _latestValue = undefined;
     }
 
     function evaluatePossiblyAsync() {
@@ -142,6 +144,7 @@ ko.computed = ko.dependentObservable = function (evaluatorFunctionOrOptions, eva
             if (typeof writeFunction === "function") {
                 // Writing a value
                 writeFunction.apply(evaluatorFunctionTarget, arguments);
+                if (options.writeDirties) _needsEvaluation = true;
             } else {
                 throw new Error("Cannot write a value to a ko.computed unless you specify a 'write' option. If you wish to read the current value, don't pass any parameters.");
             }
@@ -253,7 +256,7 @@ var protoProp = ko.observable.protoProperty; // == "__ko_proto__"
 ko.dependentObservable[protoProp] = ko.observable;
 
 ko.dependentObservable['fn'] = {
-    "equalityComparer": valuesArePrimitiveAndEqual
+    "equalityComparer": valuesAreExactlyEqual
 };
 ko.dependentObservable['fn'][protoProp] = ko.dependentObservable;
 
