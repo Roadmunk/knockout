@@ -43,13 +43,44 @@ ko.extenders = {
     }
 };
 
+/* original Knockout comparer; not used in favour of valuesAreExactlyEqual
 var primitiveTypes = { 'undefined':1, 'boolean':1, 'number':1, 'string':1 };
 function valuesArePrimitiveAndEqual(a, b) {
     var oldValueIsPrimitive = (a === null) || (typeof(a) in primitiveTypes);
     return oldValueIsPrimitive ? (a === b) : false;
-}
+}*/
 
 function valuesAreExactlyEqual(a, b) {
+    if (a && b && typeof a === "object" && typeof b === "object") {
+        if (a.constructor !== b.constructor) return false;
+
+        // Dates are considered equal if their values match
+        if (a.constructor === Date)
+            return a.valueOf() === b.valueOf();
+
+        // arrays are considered equal if all of their elements match
+        if (a.constructor === Array) {
+            if (a.length != b.length) return false;
+            for (var i=a.length-1; i>0; i--)
+                if (!valuesAreExactlyEqual(a[i], b[i])) return false;
+            return true;
+        }
+
+        // this currently only works for POJOs (hence the constructor == Object rather than a instanceof Object)
+        if (a.constructor === Object) {
+            var keys = Object.keys(a);
+            if (keys.length !== Object.keys(b).length) return false;
+
+            for (var i=keys.length-1; i>0; i--) {
+                var key = keys[i];
+                if (!b.hasOwnProperty(key)) return false;
+                if (!valuesAreExactlyEqual(a[key], b[key])) return false;
+            }
+
+            return true;
+        }
+    }
+
     return a === b;
 }
 
