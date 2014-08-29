@@ -36,7 +36,7 @@ ko.observable = function (initialValue) {
 }
 
 ko.observable['fn'] = {
-    "equalityComparer": valuesArePrimitiveAndEqual
+    "equalityComparer": valuesAreExactlyEqual
 };
 
 var protoProperty = ko.observable.protoProperty = "__ko_proto__";
