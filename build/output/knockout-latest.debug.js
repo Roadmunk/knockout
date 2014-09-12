@@ -994,16 +994,17 @@ function valuesAreExactlyEqual(a, b) {
         // arrays are considered equal if all of their elements match
         if (a.constructor === Array) {
             if (a.length != b.length) return false;
-            for (var i=a.length-1; i>0; i--)
+            for (var i=a.length-1; i>=0; i--)
                 if (!valuesAreExactlyEqual(a[i], b[i])) return false;
             return true;
         }
 
+        // this currently only works for POJOs (hence the constructor == Object rather than a instanceof Object)
         if (a.constructor === Object) {
             var keys = Object.keys(a);
             if (keys.length !== Object.keys(b).length) return false;
 
-            for (var i=keys.length-1; i>0; i--) {
+            for (var i=keys.length-1; i>=0; i--) {
                 var key = keys[i];
                 if (!b.hasOwnProperty(key)) return false;
                 if (!valuesAreExactlyEqual(a[key], b[key])) return false;
