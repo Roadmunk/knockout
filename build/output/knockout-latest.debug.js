@@ -4336,7 +4336,8 @@ ko.bindingHandlers['value'] = {
         }
 
         // Always catch "change" event; possibly other events too if asked
-        var eventsToCatch = ["change"];
+        // ROADMUNK CHANGE: also capture "input" event so that we capture cmd+z by default
+        var eventsToCatch = ["change","input"];
         var requestedEventsToCatch = allBindings.get("valueUpdate");
         var propertyChangedFired = false;
         var elementValueBeforeEvent = null;
