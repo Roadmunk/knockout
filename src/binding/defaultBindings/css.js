@@ -1,17 +1,25 @@
 var classesWrittenByBindingKey = '__ko__cssValue';
 ko.bindingHandlers['css'] = {
     'update': function (element, valueAccessor) {
-        var value = ko.utils.unwrapObservable(valueAccessor());
-        if (typeof value == "object") {
-            ko.utils.objectForEach(value, function(className, shouldHaveClass) {
-                shouldHaveClass = ko.utils.unwrapObservable(shouldHaveClass);
-                ko.utils.toggleDomNodeCssClass(element, className, shouldHaveClass);
-            });
-        } else {
-            value = String(value || ''); // Make sure we don't try to store or set a non-string value
+        var classes = ko.utils.unwrapObservable(valueAccessor());
+        var classString = [];
+
+        if (!(classes instanceof Array)) classes = [ classes ];
+
+        classes.forEach(function(clazz) {
+            if (typeof clazz == 'object') {
+                ko.utils.objectForEach(clazz, function(className, shouldHaveClass) {
+                    ko.utils.toggleDomNodeCssClass(element, className, ko.unwrap(shouldHaveClass));
+                });
+            }
+            else classString.push(String(clazz || '')); // Make sure we don't try to store or set a non-string value
+        });
+
+        if (classString.length > 0) {
+            classString = classString.join(' ');
             ko.utils.toggleDomNodeCssClass(element, element[classesWrittenByBindingKey], false);
-            element[classesWrittenByBindingKey] = value;
-            ko.utils.toggleDomNodeCssClass(element, value, true);
+            element[classesWrittenByBindingKey] = classString;
+            ko.utils.toggleDomNodeCssClass(element, classString, true);
         }
     }
 };

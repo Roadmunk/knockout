@@ -60,4 +60,40 @@ describe('Binding: CSS class name', function() {
         observable1(true);
         expect(testNode.childNodes[0].className).toEqual("complex/className complex.className");
     });
+
+    it('Should allow multiple classes when bound to an array', function() {
+        var observable1 = new ko.observable();
+
+        testNode.innerHTML = "<div class='initial' data-bind='css : [\"test1\", \"test2\"]'></div>";
+        var div = testNode.childNodes[0];
+
+        expect(div.classList.contains('initial')).toBe(true);
+        expect(div.classList.contains('test1')).toBe(false);
+        expect(div.classList.contains('test2')).toBe(false);
+
+        ko.applyBindings({ someModelProperty: observable1 }, testNode);
+
+        expect(div.classList.contains('initial')).toBe(true);
+        expect(div.classList.contains('test1')).toBe(true);
+        expect(div.classList.contains('test2')).toBe(true);
+    });
+
+    it('Should allow a mix of specific class names and boolean conditions in an array', function() {
+        var observable1 = new ko.observable(false);
+
+        testNode.innerHTML = "<div class='initial' data-bind='css : [\"test1\", { test2 : someModelProperty } ]'></div>";
+        var div = testNode.childNodes[0];
+
+        ko.applyBindings({ someModelProperty: observable1 }, testNode);
+
+        expect(div.classList.contains('initial')).toBe(true);
+        expect(div.classList.contains('test1')).toBe(true);
+        expect(div.classList.contains('test2')).toBe(false);
+
+        observable1(true);
+
+        expect(div.classList.contains('initial')).toBe(true);
+        expect(div.classList.contains('test1')).toBe(true);
+        expect(div.classList.contains('test2')).toBe(true);
+    });
 });
