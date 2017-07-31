@@ -16,7 +16,8 @@ ko.utils.domNodeDisposal = new (function () {
         ko.utils.domData.set(node, domDataKey, undefined);
     }
 
-    function cleanSingleNode(node) {
+    // ROADMUNK CHANGE: added an options argument to allow more flexiblity with cleanExternalData overrides
+    function cleanSingleNode(node, options) {
         // Run all the dispose callbacks
         var callbacks = getDisposeCallbacksCollection(node, false);
         if (callbacks) {
@@ -29,7 +30,7 @@ ko.utils.domNodeDisposal = new (function () {
         ko.utils.domData.clear(node);
 
         // Perform cleanup needed by external libraries (currently only jQuery, but can be extended)
-        ko.utils.domNodeDisposal["cleanExternalData"](node);
+        ko.utils.domNodeDisposal["cleanExternalData"](node, options);
 
         // Clear any immediate-child comment nodes, as these wouldn't have been found by
         // node.getElementsByTagName("*") in cleanNode() (comment nodes aren't elements)
@@ -62,10 +63,10 @@ ko.utils.domNodeDisposal = new (function () {
             }
         },
 
-        cleanNode : function(node) {
+        cleanNode : function(node, options) {
             // First clean this node, where applicable
             if (cleanableNodeTypes[node.nodeType]) {
-                cleanSingleNode(node);
+                cleanSingleNode(node, options);
 
                 // ... then its descendants, where applicable
                 if (cleanableNodeTypesWithDescendants[node.nodeType]) {
@@ -73,7 +74,7 @@ ko.utils.domNodeDisposal = new (function () {
                     var descendants = [];
                     ko.utils.arrayPushAll(descendants, node.getElementsByTagName("*"));
                     for (var i = 0, j = descendants.length; i < j; i++)
-                        cleanSingleNode(descendants[i]);
+                        cleanSingleNode(descendants[i], options);
                 }
             }
             return node;
